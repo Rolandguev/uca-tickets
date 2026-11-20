@@ -1,0 +1,10 @@
+.logo { display: inline-flex; align-items: center; gap: var(--space-1); color: var(--text); }
+.logo--button { background: none; border: 0; padding: 0; border-radius: var(--radius-sm); }
+.logo__mark {
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+  border-radius: var(--radius-sm);
+  background: var(--gradient-brand);
+  color: #fff; font-weight: 700; font-size: 18px;
+}
+.logo__text { white-space: nowrap; font-weight: 700; font-size: 18px; letter-spacing: 0.01em; }

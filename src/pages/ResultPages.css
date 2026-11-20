@@ -1,0 +1,6 @@
+.result { display: flex; flex-direction: column; align-items: stretch; }
+.result .status-screen { margin-bottom: var(--space-1); }
+.result__actions { display: flex; flex-direction: column; gap: var(--space-1); }
+.result__status { text-align: center; margin-top: var(--space-1); }
+.result__status { color: var(--success); }
+.result__status.is-error { color: var(--error-text); }

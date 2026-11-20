@@ -1,0 +1,9 @@
+.search { position: relative; }
+.search__icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-2); pointer-events: none; }
+.search__input {
+  width: 100%; height: 48px; padding: 0 var(--space-2) 0 44px;
+  background: var(--bg-surface); color: var(--text);
+  border: 1px solid var(--border); border-radius: var(--radius-full); font-size: 16px;
+}
+.search__input::placeholder { color: var(--text-2); }
+.search__input:focus-visible { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.45); }

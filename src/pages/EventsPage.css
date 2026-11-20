@@ -1,0 +1,10 @@
+.events-filters { display: flex; flex-direction: column; gap: var(--space-2); margin-bottom: var(--space-2); }
+.events-count { margin-bottom: var(--space-2); }
+.events-grid { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr; gap: var(--space-2); }
+@media (min-width: 640px) { .events-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 768px) {
+  .events-grid { gap: var(--space-3); }
+  .events-filters { flex-direction: row; align-items: center; flex-wrap: wrap; }
+  .events-filters .search { flex: 1 1 320px; }
+}
+@media (min-width: 1024px) { .events-grid { grid-template-columns: repeat(4, 1fr); } }

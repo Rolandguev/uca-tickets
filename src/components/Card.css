@@ -1,0 +1,7 @@
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+}
+.card__title { font-size: var(--fs-md); margin-bottom: var(--space-2); }

@@ -1,0 +1,12 @@
+.modal {
+  width: min(92vw, 420px); padding: 0; margin: auto;
+  background: var(--bg-surface); color: var(--text);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+}
+.modal::backdrop { background: rgba(5, 5, 12, 0.75); }
+.modal__body { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-3); }
+.modal__content { color: var(--text-2); font-size: var(--fs-sm); }
+.modal__actions { display: flex; flex-direction: column-reverse; gap: var(--space-1); margin-top: var(--space-1); }
+@media (min-width: 480px) {
+  .modal__actions { flex-direction: row; justify-content: flex-end; }
+}

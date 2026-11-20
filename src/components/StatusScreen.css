@@ -1,0 +1,12 @@
+.status-screen { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--space-1); }
+.status-screen__icon {
+  width: 72px; height: 72px; display: grid; place-items: center; border-radius: 50%;
+  margin-bottom: var(--space-1); color: #fff;
+}
+.status-screen__icon--success { background: var(--success); color: var(--on-solid); }
+.status-screen__icon--error { background: var(--error); }
+.status-screen__icon--primary { background: var(--primary); }
+.status-screen__icon--warning { background: var(--warning); color: var(--on-solid); }
+.status-screen__title { font-size: var(--fs-xl); }
+.status-screen__title:focus { outline: none; }
+.status-screen__message { color: var(--text-2); font-size: var(--fs-sm); max-width: 44ch; margin-bottom: var(--space-2); }

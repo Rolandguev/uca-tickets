@@ -1,0 +1,41 @@
+.navbar { border-bottom: 1px solid var(--border); background: var(--bg-base); position: sticky; top: 0; z-index: 20; }
+.navbar__bar {
+  max-width: var(--container); margin: 0 auto;
+  padding: 12px var(--space-2) 0;
+  display: grid; grid-template-columns: 1fr auto; grid-template-areas: 'logo actions' 'nav nav';
+  align-items: center; gap: 8px var(--space-2);
+}
+.navbar__logo { grid-area: logo; min-width: 0; }
+.navbar__actions { grid-area: actions; display: flex; align-items: center; gap: var(--space-1); }
+.navbar__nav { grid-area: nav; overflow-x: auto; }
+.navbar__nav ul { display: flex; gap: var(--space-1); list-style: none; padding: 0 0 12px; }
+
+.navbar__link {
+  background: var(--bg-surface); border: 1px solid var(--border); color: var(--text-2);
+  padding: 7px 14px; border-radius: var(--radius-full); font-size: var(--fs-sm); font-weight: 600; white-space: nowrap;
+}
+.navbar__link:hover { color: var(--text); }
+.navbar__link.is-active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+.navbar__cart {
+  position: relative; width: 40px; height: 40px; display: grid; place-items: center;
+  background: none; border: 0; border-radius: 50%; color: var(--text);
+}
+.navbar__cart:hover { background: var(--bg-surface); }
+.navbar__count {
+  position: absolute; top: 0; right: 0; min-width: 18px; height: 18px; padding: 0 5px;
+  display: grid; place-items: center; border-radius: var(--radius-full);
+  background: var(--accent); color: var(--on-solid); font-size: 11px; font-weight: 700;
+}
+.navbar__avatar { background: none; border: 0; padding: 0; border-radius: 50%; display: grid; }
+
+@media (min-width: 768px) {
+  .navbar__bar {
+    padding: 0 var(--space-4); height: var(--header-h);
+    grid-template-columns: auto 1fr auto; grid-template-areas: 'logo nav actions';
+  }
+  .navbar__nav { overflow: visible; justify-self: end; }
+  .navbar__nav ul { padding: 0; gap: var(--space-3); }
+  .navbar__link { background: none; border: 0; border-radius: var(--radius-sm); padding: 6px 4px; }
+  .navbar__link.is-active { background: none; color: var(--text); box-shadow: 0 2px 0 var(--accent); border-radius: 0; }
+}

@@ -1,0 +1,17 @@
+.my-tickets { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.my-ticket {
+  width: 100%; display: flex; align-items: center; gap: var(--space-2); text-align: left;
+  padding: var(--space-2); background: var(--bg-surface); color: var(--text);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  transition: border-color 0.15s ease;
+}
+.my-ticket:hover { border-color: var(--primary); }
+.my-ticket__date {
+  width: 52px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center;
+  padding: 6px 0; border-radius: var(--radius-md); background: var(--bg-base);
+}
+.my-ticket__month { font-size: 11px; font-weight: 700; color: var(--accent); }
+.my-ticket__day { font-size: 20px; font-weight: 700; line-height: 1.1; }
+.my-ticket__info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.my-ticket__title { font-weight: 700; }
+.my-ticket__meta { font-size: 13px; color: var(--text-2); }

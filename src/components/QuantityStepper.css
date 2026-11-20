@@ -1,0 +1,8 @@
+.qty { display: inline-flex; align-items: center; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-base); }
+.qty__btn {
+  width: 44px; height: 44px; background: none; border: 0; color: var(--text);
+  font-size: 22px; line-height: 1; border-radius: var(--radius-md);
+}
+.qty__btn:hover:not(:disabled) { background: var(--bg-raised); }
+.qty__btn:disabled { color: var(--neutral); cursor: not-allowed; }
+.qty__value { min-width: 36px; text-align: center; font-weight: 700; font-size: var(--fs-md); }

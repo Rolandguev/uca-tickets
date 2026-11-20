@@ -1,0 +1,51 @@
+/* ===========================================================
+   Design System de UCA TICKETS -> variables CSS
+   (los mismos tokens del Figma de la primera entrega)
+   =========================================================== */
+:root {
+  /* Colores */
+  --bg-base: #0b0b14;
+  --bg-surface: #16162a;
+  --bg-raised: #1d1d36;
+  --border: #2a2a44;
+  --text: #f5f5fa;
+  --text-2: #a1a1b5;
+  --primary: #7c3aed;
+  --primary-700: #6d28d9;
+  --accent: #ec4899;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --error-text: #f87171;
+  --neutral: #6b7280;
+  --on-solid: #0b0b14; /* texto sobre fondos de color sólidos (badges) */
+  --gradient-brand: linear-gradient(90deg, #7c3aed, #ec4899);
+  --gradient-panel: linear-gradient(135deg, #5b21b6, #be185d);
+
+  /* Espaciado (sistema de 8px) */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 40px;
+  --space-6: 48px;
+
+  /* Radios */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+
+  /* Tipografía */
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --fs-xs: 12px;
+  --fs-sm: 14px;
+  --fs-md: 16px;
+  --fs-lg: 20px;
+  --fs-xl: 28px;
+  --fs-2xl: 36px;
+
+  /* Layout */
+  --container: 1120px;
+  --header-h: 64px;
+}

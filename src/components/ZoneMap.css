@@ -1,0 +1,10 @@
+.zone-map { width: 100%; height: auto; }
+.zone-map__stage { fill: var(--bg-raised); stroke: var(--border); }
+.zone-map__stage-text { fill: var(--text-2); font-size: 12px; font-weight: 700; letter-spacing: 0.12em; }
+.zone-map__zone { cursor: pointer; }
+.zone-map__zone path { stroke: var(--bg-surface); stroke-width: 3; transition: opacity 0.15s ease; }
+.zone-map__zone:hover path { opacity: 0.85; }
+.zone-map__zone.is-selected path { stroke: #fff; stroke-width: 4; }
+.zone-map__zone.is-soldout { cursor: not-allowed; opacity: 0.3; }
+.zone-map__name { font-size: 13px; font-weight: 700; pointer-events: none; }
+.zone-map__price { font-size: 12px; font-weight: 600; pointer-events: none; }

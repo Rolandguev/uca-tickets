@@ -1,0 +1,10 @@
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 3px 10px; border-radius: var(--radius-full);
+  font-size: 12px; font-weight: 700; line-height: 1.4; white-space: nowrap;
+}
+.badge--success { background: var(--success); color: var(--on-solid); }
+.badge--warning { background: var(--warning); color: var(--on-solid); }
+.badge--error { background: var(--error); color: var(--on-solid); }
+.badge--neutral { background: var(--neutral); color: #fff; }
+.badge--primary { background: var(--primary); color: #fff; }

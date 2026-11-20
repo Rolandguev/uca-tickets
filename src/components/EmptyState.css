@@ -1,0 +1,10 @@
+.empty {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: var(--space-1); padding: var(--space-6) var(--space-2);
+  background: var(--bg-surface); border: 1px dashed var(--border); border-radius: var(--radius-lg);
+}
+.empty__icon {
+  width: 56px; height: 56px; display: grid; place-items: center;
+  border-radius: 50%; background: var(--bg-raised); color: var(--text-2); margin-bottom: var(--space-1);
+}
+.empty__message { color: var(--text-2); max-width: 44ch; margin-bottom: var(--space-1); }

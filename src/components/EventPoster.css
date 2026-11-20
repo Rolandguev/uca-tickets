@@ -1,0 +1,20 @@
+.poster {
+  position: relative; overflow: hidden; aspect-ratio: 3 / 4;
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 6px;
+  padding: var(--space-2); border-radius: var(--radius-md);
+  background:
+    radial-gradient(circle at 80% 15%, rgba(255, 255, 255, 0.28), transparent 45%),
+    linear-gradient(160deg, var(--p1), var(--p2));
+  color: #fff;
+}
+.poster::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.65), transparent 65%);
+}
+.poster > * { position: relative; z-index: 1; }
+.poster__tag {
+  align-self: flex-start; padding: 2px 8px; border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.2); font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+}
+.poster__title { font-size: 20px; font-weight: 700; line-height: 1.15; text-wrap: balance; }
+.poster__meta { font-size: 12px; opacity: 0.85; }

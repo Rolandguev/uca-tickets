@@ -16,7 +16,7 @@ function validate(values) {
 }
 
 // Inicio de sesión simulado (formulario controlado)
-export default function LoginPage({ session, onLogin, onEvents }) {
+export default function LoginPage({ session, onLogin, onEvents, onNavigate }) {
   const [values, setValues] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -108,6 +108,12 @@ export default function LoginPage({ session, onLogin, onEvents }) {
             </Button>
           </form>
         </Card>
+
+        <div className="auth__links">
+          <Button variant="ghost" size="sm" onClick={() => onNavigate('register')}>
+            ¿No tienes cuenta? Crear cuenta
+          </Button>
+        </div>
 
         <p className="muted small auth__demo">
           Demo: <strong>maria.lopez@correo.com</strong> (cliente) o <strong>ana.rivas@correo.com</strong>{' '}

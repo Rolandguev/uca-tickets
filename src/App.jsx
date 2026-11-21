@@ -11,6 +11,7 @@ import MyTicketsPage from './pages/MyTicketsPage';
 import TicketPage from './pages/TicketPage';
 import SentPage from './pages/SentPage';
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import { EVENTS } from './data/events';
 import { SEED_ORDERS } from './data/orders';
@@ -18,7 +19,7 @@ import { ACCOUNTS } from './data/accounts';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useAsync } from './hooks/useAsync';
 import { fetchEvents, processPayment, sendTicketEmail } from './utils/api';
-import { loginRequest } from './utils/authApi';
+import { loginRequest, registerRequest } from './utils/authApi';
 import { addToCart, cartLines, removeFromCart, setQty, totals as cartTotals } from './utils/cart';
 import { zoneAvailable } from './utils/events';
 import { buildOrder, nextOrderId } from './utils/tickets';
@@ -34,6 +35,7 @@ const TITLES = {
   ticket: 'Tu boleto',
   sent: 'Boleto enviado',
   login: 'Inicia sesión',
+  register: 'Crear cuenta',
   profile: 'Mi perfil',
 };
 
@@ -42,7 +44,7 @@ export default function App() {
   const [route, setRoute] = useState({ view: 'events', params: {} });
   const [cart, setCart] = useLocalStorage('uca.cart', []);
   const [session, setSession] = useLocalStorage('uca.session', null);
-  const [users] = useLocalStorage('uca.users', ACCOUNTS);
+  const [users, setUsers] = useLocalStorage('uca.users', ACCOUNTS);
   const [orders, setOrders] = useLocalStorage('uca.orders', SEED_ORDERS);
   const [prefs, setPrefs] = useLocalStorage('uca.prefs', { category: 'Todos', simulateErrors: false });
 
@@ -119,6 +121,14 @@ export default function App() {
   async function handleLogin(values) {
   const user = await loginRequest(users, values, { simulateError });
   setSession(user);
+  navigate('events');
+}
+
+async function handleRegister(values) {
+  const newUser = await registerRequest(users, values, { simulateError });
+  setUsers((prev) => [...prev, newUser]);
+  const { password: _password, ...safeUser } = newUser;
+  setSession(safeUser); // la cuenta nueva entra con sesión iniciada
   navigate('events');
 }
 
@@ -216,7 +226,13 @@ export default function App() {
           />
         );
       case 'login':
-        return <LoginPage session={session} onLogin={handleLogin} onEvents={() => navigate('events')} />;
+        return (
+          <LoginPage session={session} onLogin={handleLogin} onEvents={() => navigate('events')} onNavigate={navigate} />
+        );
+      case 'register':
+        return (
+          <RegisterPage session={session} onRegister={handleRegister} onEvents={() => navigate('events')} onNavigate={navigate} />
+        );
       case 'profile':
         return (
           <PlaceholderPage

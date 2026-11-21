@@ -17,3 +17,24 @@ export async function loginRequest(users, { email, password }, { simulateError =
   return safeUser;
 }
 
+// Registro simulado. Crea un usuario con rol Cliente y lo devuelve (sin guardarlo todavía).
+// Si el correo ya existe falla con un error asociado al campo "email".
+export async function registerRequest(users, { name, email, phone, password }, { simulateError = false } = {}) {
+  await wait(1000);
+  if (simulateError) throw new Error('No pudimos comunicarnos con el servidor. Inténtalo de nuevo.');
+  if (users.some((u) => u.email.toLowerCase() === email.trim().toLowerCase())) {
+    const error = new Error('Ya existe una cuenta con este correo. Inicia sesión o usa otro correo.');
+    error.field = 'email';
+    throw error;
+  }
+  return {
+    id: `u${users.length + 1}`,
+    name: name.trim(),
+    email: email.trim(),
+    phone: phone.trim(),
+    role: 'Cliente',
+    password,
+    active: true,
+  };
+}
+

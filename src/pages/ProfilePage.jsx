@@ -78,6 +78,9 @@ export default function ProfilePage({ session, onLogout, onNavigate }) {
       </Card>
 
       <div className="profile__actions">
+        {['Administrador', 'Organizador'].includes(session.role) && (
+          <Button onClick={() => onNavigate('admin')}>Panel de administración</Button>
+        )}
         <Button variant="secondary" onClick={() => onNavigate('tickets')}>Mis boletos</Button>
         <Button variant="danger" onClick={onLogout}>Cerrar sesión</Button>
       </div>

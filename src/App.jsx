@@ -14,6 +14,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import RecoverPage from './pages/RecoverPage';
 import ProfilePage from './pages/ProfilePage';
+import AdminPage from './pages/AdminPage';
 import { EVENTS } from './data/events';
 import { SEED_ORDERS } from './data/orders';
 import { ACCOUNTS } from './data/accounts';
@@ -38,6 +39,7 @@ const TITLES = {
   login: 'Inicia sesión',
   register: 'Crear cuenta',
   recover: 'Recuperar contraseña',
+  admin: 'Panel de administración',
   profile: 'Mi perfil',
 };
 
@@ -49,7 +51,6 @@ export default function App() {
   const [users, setUsers] = useLocalStorage('uca.users', ACCOUNTS);
   const [orders, setOrders] = useLocalStorage('uca.orders', SEED_ORDERS);
   const [prefs, setPrefs] = useLocalStorage('uca.prefs', { category: 'Todos', simulateErrors: false });
-
   const simulateError = prefs.simulateErrors;
   const catalog = useAsync(() => fetchEvents(EVENTS, { simulateError }), [simulateError]);
   const events = catalog.data ?? [];
@@ -237,8 +238,10 @@ const handleRecover = (email) => recoverRequest(users, { email }, { simulateErro
         return (
           <RegisterPage session={session} onRegister={handleRegister} onEvents={() => navigate('events')} onNavigate={navigate} />
         );
-         case 'recover':
+      case 'recover':
         return <RecoverPage onRecover={handleRecover} onNavigate={navigate} />;
+      case 'admin':
+        return <AdminPage session={session} catalog={catalog} orders={orders} users={users} onNavigate={navigate} />;
       case 'profile':
         return (
           <ProfilePage

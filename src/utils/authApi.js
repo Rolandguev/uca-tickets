@@ -38,3 +38,10 @@ export async function registerRequest(users, { name, email, phone, password }, {
   };
 }
 
+// Recuperación de contraseña simulada. No se envía ningún correo real.
+// Siempre responde igual exista o no la cuenta, para no revelar qué correos están registrados.
+export async function recoverRequest(_users, { email: _email }, { simulateError = false } = {}) {
+  await wait(1000);
+  if (simulateError) throw new Error('No pudimos enviar las instrucciones. Inténtalo de nuevo.');
+  return true;
+}

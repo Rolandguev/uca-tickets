@@ -110,6 +110,9 @@ export default function LoginPage({ session, onLogin, onEvents, onNavigate }) {
         </Card>
 
         <div className="auth__links">
+          <Button variant="ghost" size="sm" onClick={() => onNavigate('recover')}>
+            ¿Olvidaste tu contraseña?
+          </Button>
           <Button variant="ghost" size="sm" onClick={() => onNavigate('register')}>
             ¿No tienes cuenta? Crear cuenta
           </Button>

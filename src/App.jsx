@@ -12,6 +12,7 @@ import TicketPage from './pages/TicketPage';
 import SentPage from './pages/SentPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import RecoverPage from './pages/RecoverPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import { EVENTS } from './data/events';
 import { SEED_ORDERS } from './data/orders';
@@ -19,7 +20,7 @@ import { ACCOUNTS } from './data/accounts';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useAsync } from './hooks/useAsync';
 import { fetchEvents, processPayment, sendTicketEmail } from './utils/api';
-import { loginRequest, registerRequest } from './utils/authApi';
+import { loginRequest, recoverRequest, registerRequest } from './utils/authApi';
 import { addToCart, cartLines, removeFromCart, setQty, totals as cartTotals } from './utils/cart';
 import { zoneAvailable } from './utils/events';
 import { buildOrder, nextOrderId } from './utils/tickets';
@@ -36,6 +37,7 @@ const TITLES = {
   sent: 'Boleto enviado',
   login: 'Inicia sesión',
   register: 'Crear cuenta',
+  recover: 'Recuperar contraseña',
   profile: 'Mi perfil',
 };
 
@@ -131,6 +133,8 @@ async function handleRegister(values) {
   setSession(safeUser); // la cuenta nueva entra con sesión iniciada
   navigate('events');
 }
+
+const handleRecover = (email) => recoverRequest(users, { email }, { simulateError });
 
   const findOrder = (id) => orders.find((o) => o.id === id);
 
@@ -233,6 +237,8 @@ async function handleRegister(values) {
         return (
           <RegisterPage session={session} onRegister={handleRegister} onEvents={() => navigate('events')} onNavigate={navigate} />
         );
+         case 'recover':
+        return <RecoverPage onRecover={handleRecover} onNavigate={navigate} />;
       case 'profile':
         return (
           <PlaceholderPage

@@ -13,7 +13,7 @@ import SentPage from './pages/SentPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import RecoverPage from './pages/RecoverPage';
-import PlaceholderPage from './pages/PlaceholderPage';
+import ProfilePage from './pages/ProfilePage';
 import { EVENTS } from './data/events';
 import { SEED_ORDERS } from './data/orders';
 import { ACCOUNTS } from './data/accounts';
@@ -241,15 +241,13 @@ const handleRecover = (email) => recoverRequest(users, { email }, { simulateErro
         return <RecoverPage onRecover={handleRecover} onNavigate={navigate} />;
       case 'profile':
         return (
-          <PlaceholderPage
-            view={view}
+          <ProfilePage
             session={session}
-            onLogin={(user) => {
-              setSession(user);
+            onLogout={() => {
+              setSession(null);
               navigate('events');
             }}
-            onLogout={() => setSession(null)}
-            onEvents={() => navigate('events')}
+            onNavigate={navigate}
           />
         );
       default:

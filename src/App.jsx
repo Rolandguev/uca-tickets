@@ -10,12 +10,15 @@ import FailedPage from './pages/FailedPage';
 import MyTicketsPage from './pages/MyTicketsPage';
 import TicketPage from './pages/TicketPage';
 import SentPage from './pages/SentPage';
+import LoginPage from './pages/LoginPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import { EVENTS } from './data/events';
 import { SEED_ORDERS } from './data/orders';
+import { ACCOUNTS } from './data/accounts';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useAsync } from './hooks/useAsync';
 import { fetchEvents, processPayment, sendTicketEmail } from './utils/api';
+import { loginRequest } from './utils/authApi';
 import { addToCart, cartLines, removeFromCart, setQty, totals as cartTotals } from './utils/cart';
 import { zoneAvailable } from './utils/events';
 import { buildOrder, nextOrderId } from './utils/tickets';
@@ -39,6 +42,7 @@ export default function App() {
   const [route, setRoute] = useState({ view: 'events', params: {} });
   const [cart, setCart] = useLocalStorage('uca.cart', []);
   const [session, setSession] = useLocalStorage('uca.session', null);
+  const [users] = useLocalStorage('uca.users', ACCOUNTS);
   const [orders, setOrders] = useLocalStorage('uca.orders', SEED_ORDERS);
   const [prefs, setPrefs] = useLocalStorage('uca.prefs', { category: 'Todos', simulateErrors: false });
 
@@ -111,6 +115,12 @@ export default function App() {
     await sendTicketEmail(order.buyer.email, { simulateError });
     navigate('sent', { orderId: order.id });
   }
+
+  async function handleLogin(values) {
+  const user = await loginRequest(users, values, { simulateError });
+  setSession(user);
+  navigate('events');
+}
 
   const findOrder = (id) => orders.find((o) => o.id === id);
 
@@ -206,6 +216,7 @@ export default function App() {
           />
         );
       case 'login':
+        return <LoginPage session={session} onLogin={handleLogin} onEvents={() => navigate('events')} />;
       case 'profile':
         return (
           <PlaceholderPage
@@ -246,3 +257,4 @@ export default function App() {
     </>
   );
 }
+

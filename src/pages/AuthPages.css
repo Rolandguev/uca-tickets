@@ -1,0 +1,4 @@
+/* Estilos compartidos por las pantallas de cuenta: login, registro y recuperación */
+
+.auth { width: 100%; max-width: 440px; margin: 0 auto; }
+.auth__demo { margin-top: var(--space-2); text-align: center; }

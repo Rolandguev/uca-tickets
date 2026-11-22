@@ -1,0 +1,2 @@
+.notice { margin-bottom: var(--space-2); color: var(--success); font-size: var(--fs-sm); font-weight: 600; }
+.notice:empty { display: none; }

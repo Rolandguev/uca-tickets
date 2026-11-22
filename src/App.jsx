@@ -16,6 +16,13 @@ import RecoverPage from './pages/RecoverPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
 import ReportsPage from './pages/ReportsPage';
+import AdminEventsPage from './pages/AdminEventsPage';
+import AdminInventoryPage from './pages/AdminInventoryPage';
+import AdminUsersPage from './pages/AdminUsersPage';
+import AdminNav, { ADMIN_VIEWS } from './components/AdminNav';
+import { saveRequest } from './utils/adminApi';
+import { addEvent, removeEvent, updateEvent, updateZone } from './utils/eventAdmin';
+import { ADMIN_ROLES, hasAccess } from './utils/roles';
 import { EVENTS } from './data/events';
 import { SEED_ORDERS } from './data/orders';
 import { ACCOUNTS } from './data/accounts';
@@ -42,6 +49,9 @@ const TITLES = {
   recover: 'Recuperar contraseña',
   admin: 'Panel de administración',
   reports: 'Reportes',
+  adminEvents: 'Gestión de eventos',
+  adminInventory: 'Inventario y precios',
+  adminUsers: 'Usuarios',
   profile: 'Mi perfil',
 };
 
@@ -53,8 +63,12 @@ export default function App() {
   const [users, setUsers] = useLocalStorage('uca.users', ACCOUNTS);
   const [orders, setOrders] = useLocalStorage('uca.orders', SEED_ORDERS);
   const [prefs, setPrefs] = useLocalStorage('uca.prefs', { category: 'Todos', simulateErrors: false });
+   const [eventList, setEventList] = useLocalStorage('uca.events', EVENTS);
   const simulateError = prefs.simulateErrors;
-  const catalog = useAsync(() => fetchEvents(EVENTS, { simulateError }), [simulateError]);
+  const loaded = useAsync(() => fetchEvents(EVENTS, { simulateError }), [simulateError]);
+
+  // Los eventos viven en eventList (editable desde el panel); "loaded" solo simula la carga y el error
+  const catalog = { ...loaded, data: loaded.status === 'success' ? eventList : null };
   const events = catalog.data ?? [];
 
   /* ---------- Valores derivados (no se guardan duplicados) ---------- */
@@ -138,6 +152,32 @@ async function handleRegister(values) {
 }
 
 const handleRecover = (email) => recoverRequest(users, { email }, { simulateError });
+
+  /* --Administración: cada cambio simula guardar (carga o error) y luego actualiza el estado-- */
+  async function handleAddEvent(values) {
+    await saveRequest({ simulateError });
+    setEventList((list) => addEvent(list, values));
+  }
+
+  async function handleEditEvent(id, values) {
+    await saveRequest({ simulateError });
+    setEventList((list) => updateEvent(list, id, values));
+  }
+
+  async function handleRemoveEvent(id) {
+    await saveRequest({ simulateError });
+    setEventList((list) => removeEvent(list, id));
+  }
+
+  async function handleEditZone(eventId, zoneId, values) {
+    await saveRequest({ simulateError });
+    setEventList((list) => updateZone(list, eventId, zoneId, values));
+  }
+
+  async function handleToggleUser(id) {
+    await saveRequest({ simulateError });
+    setUsers((list) => list.map((u) => (u.id === id ? { ...u, active: !u.active } : u)));
+  }
 
   const findOrder = (id) => orders.find((o) => o.id === id);
 
@@ -246,6 +286,32 @@ const handleRecover = (email) => recoverRequest(users, { email }, { simulateErro
         return <AdminPage session={session} catalog={catalog} orders={orders} users={users} onNavigate={navigate} />;
       case 'reports':
         return <ReportsPage session={session} catalog={catalog} orders={orders} onNavigate={navigate} />;
+
+      case 'adminEvents':
+        return (
+          <AdminEventsPage
+            session={session}
+            catalog={catalog}
+            orders={orders}
+            onAdd={handleAddEvent}
+            onEdit={handleEditEvent}
+            onRemove={handleRemoveEvent}
+            onNavigate={navigate}
+          />
+        );
+      case 'adminInventory':
+        return (
+          <AdminInventoryPage
+            session={session}
+            catalog={catalog}
+            orders={orders}
+            onEditZone={handleEditZone}
+            onNavigate={navigate}
+          />
+        );
+      case 'adminUsers':
+        return <AdminUsersPage session={session} users={users} onToggleUser={handleToggleUser} onNavigate={navigate} />;
+
       case 'profile':
         return (
           <ProfilePage
@@ -275,6 +341,9 @@ const handleRecover = (email) => recoverRequest(users, { email }, { simulateErro
       <a href="#main" className="skip-link">Saltar al contenido</a>
       <Navbar view={route.view} session={session} cartCount={cartCount} onNavigate={navigate} />
       <main id="main" ref={mainRef} className="main" tabIndex={-1}>
+        {ADMIN_VIEWS.includes(route.view) && hasAccess(session, ADMIN_ROLES) && (
+          <AdminNav view={route.view} role={session.role} onNavigate={navigate} />
+        )}
         {renderView()}
       </main>
       <Footer

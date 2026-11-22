@@ -7,3 +7,8 @@ export function validatePassword(value, strict = true) {
   if (value.length < 8) return 'La contraseña debe tener al menos 8 caracteres.';
   return /[A-Za-z]/.test(value) && /\d/.test(value) ? '' : 'Incluye al menos una letra y un número.';
 }
+
+export function validateConfirmPassword(password, confirm) {
+  if (!confirm) return 'Repite tu contraseña.';
+  return password === confirm ? '' : 'Las contraseñas no coinciden.';
+}

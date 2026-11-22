@@ -11,14 +11,25 @@ import MyTicketsPage from './pages/MyTicketsPage';
 import TicketPage from './pages/TicketPage';
 import SentPage from './pages/SentPage';
 import LoginPage from './pages/LoginPage';
-import PlaceholderPage from './pages/PlaceholderPage';
+import RegisterPage from './pages/RegisterPage';
+import RecoverPage from './pages/RecoverPage';
+import ProfilePage from './pages/ProfilePage';
+import AdminPage from './pages/AdminPage';
+import ReportsPage from './pages/ReportsPage';
+import AdminEventsPage from './pages/AdminEventsPage';
+import AdminInventoryPage from './pages/AdminInventoryPage';
+import AdminUsersPage from './pages/AdminUsersPage';
+import AdminNav, { ADMIN_VIEWS } from './components/AdminNav';
+import { saveRequest } from './utils/adminApi';
+import { addEvent, removeEvent, updateEvent, updateZone } from './utils/eventAdmin';
+import { ADMIN_ROLES, hasAccess } from './utils/roles';
 import { EVENTS } from './data/events';
 import { SEED_ORDERS } from './data/orders';
 import { ACCOUNTS } from './data/accounts';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useAsync } from './hooks/useAsync';
 import { fetchEvents, processPayment, sendTicketEmail } from './utils/api';
-import { loginRequest } from './utils/authApi';
+import { loginRequest, recoverRequest, registerRequest } from './utils/authApi';
 import { addToCart, cartLines, removeFromCart, setQty, totals as cartTotals } from './utils/cart';
 import { zoneAvailable } from './utils/events';
 import { buildOrder, nextOrderId } from './utils/tickets';
@@ -34,6 +45,13 @@ const TITLES = {
   ticket: 'Tu boleto',
   sent: 'Boleto enviado',
   login: 'Inicia sesión',
+  register: 'Crear cuenta',
+  recover: 'Recuperar contraseña',
+  admin: 'Panel de administración',
+  reports: 'Reportes',
+  adminEvents: 'Gestión de eventos',
+  adminInventory: 'Inventario y precios',
+  adminUsers: 'Usuarios',
   profile: 'Mi perfil',
 };
 
@@ -42,12 +60,15 @@ export default function App() {
   const [route, setRoute] = useState({ view: 'events', params: {} });
   const [cart, setCart] = useLocalStorage('uca.cart', []);
   const [session, setSession] = useLocalStorage('uca.session', null);
-  const [users] = useLocalStorage('uca.users', ACCOUNTS);
+  const [users, setUsers] = useLocalStorage('uca.users', ACCOUNTS);
   const [orders, setOrders] = useLocalStorage('uca.orders', SEED_ORDERS);
   const [prefs, setPrefs] = useLocalStorage('uca.prefs', { category: 'Todos', simulateErrors: false });
-
+   const [eventList, setEventList] = useLocalStorage('uca.events', EVENTS);
   const simulateError = prefs.simulateErrors;
-  const catalog = useAsync(() => fetchEvents(EVENTS, { simulateError }), [simulateError]);
+  const loaded = useAsync(() => fetchEvents(EVENTS, { simulateError }), [simulateError]);
+
+  // Los eventos viven en eventList (editable desde el panel); "loaded" solo simula la carga y el error
+  const catalog = { ...loaded, data: loaded.status === 'success' ? eventList : null };
   const events = catalog.data ?? [];
 
   /* ---------- Valores derivados (no se guardan duplicados) ---------- */
@@ -121,6 +142,42 @@ export default function App() {
   setSession(user);
   navigate('events');
 }
+
+async function handleRegister(values) {
+  const newUser = await registerRequest(users, values, { simulateError });
+  setUsers((prev) => [...prev, newUser]);
+  const { password: _password, ...safeUser } = newUser;
+  setSession(safeUser); // la cuenta nueva entra con sesión iniciada
+  navigate('events');
+}
+
+const handleRecover = (email) => recoverRequest(users, { email }, { simulateError });
+
+  /* --Administración: cada cambio simula guardar (carga o error) y luego actualiza el estado-- */
+  async function handleAddEvent(values) {
+    await saveRequest({ simulateError });
+    setEventList((list) => addEvent(list, values));
+  }
+
+  async function handleEditEvent(id, values) {
+    await saveRequest({ simulateError });
+    setEventList((list) => updateEvent(list, id, values));
+  }
+
+  async function handleRemoveEvent(id) {
+    await saveRequest({ simulateError });
+    setEventList((list) => removeEvent(list, id));
+  }
+
+  async function handleEditZone(eventId, zoneId, values) {
+    await saveRequest({ simulateError });
+    setEventList((list) => updateZone(list, eventId, zoneId, values));
+  }
+
+  async function handleToggleUser(id) {
+    await saveRequest({ simulateError });
+    setUsers((list) => list.map((u) => (u.id === id ? { ...u, active: !u.active } : u)));
+  }
 
   const findOrder = (id) => orders.find((o) => o.id === id);
 
@@ -216,18 +273,54 @@ export default function App() {
           />
         );
       case 'login':
-        return <LoginPage session={session} onLogin={handleLogin} onEvents={() => navigate('events')} />;
+        return (
+          <LoginPage session={session} onLogin={handleLogin} onEvents={() => navigate('events')} onNavigate={navigate} />
+        );
+      case 'register':
+        return (
+          <RegisterPage session={session} onRegister={handleRegister} onEvents={() => navigate('events')} onNavigate={navigate} />
+        );
+      case 'recover':
+        return <RecoverPage onRecover={handleRecover} onNavigate={navigate} />;
+      case 'admin':
+        return <AdminPage session={session} catalog={catalog} orders={orders} users={users} onNavigate={navigate} />;
+      case 'reports':
+        return <ReportsPage session={session} catalog={catalog} orders={orders} onNavigate={navigate} />;
+
+      case 'adminEvents':
+        return (
+          <AdminEventsPage
+            session={session}
+            catalog={catalog}
+            orders={orders}
+            onAdd={handleAddEvent}
+            onEdit={handleEditEvent}
+            onRemove={handleRemoveEvent}
+            onNavigate={navigate}
+          />
+        );
+      case 'adminInventory':
+        return (
+          <AdminInventoryPage
+            session={session}
+            catalog={catalog}
+            orders={orders}
+            onEditZone={handleEditZone}
+            onNavigate={navigate}
+          />
+        );
+      case 'adminUsers':
+        return <AdminUsersPage session={session} users={users} onToggleUser={handleToggleUser} onNavigate={navigate} />;
+
       case 'profile':
         return (
-          <PlaceholderPage
-            view={view}
+          <ProfilePage
             session={session}
-            onLogin={(user) => {
-              setSession(user);
+            onLogout={() => {
+              setSession(null);
               navigate('events');
             }}
-            onLogout={() => setSession(null)}
-            onEvents={() => navigate('events')}
+            onNavigate={navigate}
           />
         );
       default:
@@ -248,6 +341,9 @@ export default function App() {
       <a href="#main" className="skip-link">Saltar al contenido</a>
       <Navbar view={route.view} session={session} cartCount={cartCount} onNavigate={navigate} />
       <main id="main" ref={mainRef} className="main" tabIndex={-1}>
+        {ADMIN_VIEWS.includes(route.view) && hasAccess(session, ADMIN_ROLES) && (
+          <AdminNav view={route.view} role={session.role} onNavigate={navigate} />
+        )}
         {renderView()}
       </main>
       <Footer

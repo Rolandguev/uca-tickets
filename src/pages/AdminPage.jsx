@@ -1,16 +1,15 @@
+import AccessDenied from '../components/AccessDenied';
 import Badge from '../components/Badge';
-import Button from '../components/Button';
 import DataTable from '../components/DataTable';
-import EmptyState from '../components/EmptyState';
 import ErrorMessage from '../components/ErrorMessage';
 import Loader from '../components/Loader';
 import StatCard from '../components/StatCard';
 import { dashboardStats, recentOrders } from '../utils/adminStats';
 import { formatDateTime, formatMoney, plural } from '../utils/format';
+import { ADMIN_ROLES, hasAccess } from '../utils/roles';
 import { ORDER_LABEL, ORDER_TONE } from '../utils/tickets';
+import Button from '../components/Button';
 import './AdminPage.css';
-
-const ALLOWED_ROLES = ['Administrador', 'Organizador'];
 
 const ORDER_COLUMNS = [
   { key: 'id', label: 'Orden' },
@@ -24,27 +23,8 @@ const ORDER_COLUMNS = [
 // Dashboard de administración: métricas y órdenes recientes (solo Administrador y Organizador)
 export default function AdminPage({ session, catalog, orders, users, onNavigate }) {
   // 1) Control de acceso por rol (simulado)
-  if (!session) {
-    return (
-      <div className="container container--narrow">
-        <EmptyState
-          title="Inicia sesión para entrar al panel"
-          message="El panel de administración es solo para cuentas con rol de Administrador u Organizador."
-          action={<Button onClick={() => onNavigate('login')}>Iniciar sesión</Button>}
-        />
-      </div>
-    );
-  }
-  if (!ALLOWED_ROLES.includes(session.role)) {
-    return (
-      <div className="container container--narrow">
-        <EmptyState
-          title="No tienes acceso a esta sección"
-          message={`Tu cuenta tiene el rol ${session.role}. El panel es solo para Administrador y Organizador.`}
-          action={<Button onClick={() => onNavigate('events')}>Ver eventos</Button>}
-        />
-      </div>
-    );
+  if (!hasAccess(session, ADMIN_ROLES)) {
+    return <AccessDenied session={session} roles={ADMIN_ROLES} onNavigate={onNavigate} />;
   }
 
   // 2) Estados de carga y error del catálogo (operación simulada)
@@ -67,8 +47,8 @@ export default function AdminPage({ session, catalog, orders, users, onNavigate 
       <header className="page-header">
         <h1 tabIndex={-1}>Panel de administración</h1>
         <p>Resumen de ventas, eventos y usuarios.</p>
+        <Button variant="secondary" size="sm" onClick={() => onNavigate('reports')}>Ver reportes</Button>
       </header>
-
       <section className="admin__stats" aria-label="Resumen">
         <StatCard label="Ventas pagadas" value={formatMoney(stats.revenue)} hint="Órdenes con pago confirmado" />
         <StatCard label="Boletos vendidos" value={stats.ticketsSold} hint="De órdenes pagadas" />

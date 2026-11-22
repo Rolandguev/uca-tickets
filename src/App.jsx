@@ -15,6 +15,7 @@ import RegisterPage from './pages/RegisterPage';
 import RecoverPage from './pages/RecoverPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
+import ReportsPage from './pages/ReportsPage';
 import { EVENTS } from './data/events';
 import { SEED_ORDERS } from './data/orders';
 import { ACCOUNTS } from './data/accounts';
@@ -40,6 +41,7 @@ const TITLES = {
   register: 'Crear cuenta',
   recover: 'Recuperar contraseña',
   admin: 'Panel de administración',
+  reports: 'Reportes',
   profile: 'Mi perfil',
 };
 
@@ -242,6 +244,8 @@ const handleRecover = (email) => recoverRequest(users, { email }, { simulateErro
         return <RecoverPage onRecover={handleRecover} onNavigate={navigate} />;
       case 'admin':
         return <AdminPage session={session} catalog={catalog} orders={orders} users={users} onNavigate={navigate} />;
+      case 'reports':
+        return <ReportsPage session={session} catalog={catalog} orders={orders} onNavigate={navigate} />;
       case 'profile':
         return (
           <ProfilePage

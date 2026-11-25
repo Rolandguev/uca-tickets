@@ -11,6 +11,7 @@
 .navbar__nav ul { display: flex; gap: var(--space-1); list-style: none; padding: 0 0 12px; }
 
 .navbar__link {
+  display: inline-block; text-decoration: none;
   background: var(--bg-surface); border: 1px solid var(--border); color: var(--text-2);
   padding: 7px 14px; border-radius: var(--radius-full); font-size: var(--fs-sm); font-weight: 600; white-space: nowrap;
 }
@@ -18,7 +19,7 @@
 .navbar__link.is-active { background: var(--primary); border-color: var(--primary); color: #fff; }
 
 .navbar__cart {
-  position: relative; width: 40px; height: 40px; display: grid; place-items: center;
+  position: relative; text-decoration: none; width: 40px; height: 40px; display: grid; place-items: center;
   background: none; border: 0; border-radius: 50%; color: var(--text);
 }
 .navbar__cart:hover { background: var(--bg-surface); }

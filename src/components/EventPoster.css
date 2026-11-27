@@ -7,11 +7,14 @@
     linear-gradient(160deg, var(--p1), var(--p2));
   color: #fff;
 }
+.poster__img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;
+}
 .poster::after {
-  content: ''; position: absolute; inset: 0;
+  content: ''; position: absolute; inset: 0; z-index: 0;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.65), transparent 65%);
 }
-.poster > * { position: relative; z-index: 1; }
+.poster > :not(.poster__img) { position: relative; z-index: 1; }
 .poster__tag {
   align-self: flex-start; padding: 2px 8px; border-radius: var(--radius-full);
   background: rgba(255, 255, 255, 0.2); font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;

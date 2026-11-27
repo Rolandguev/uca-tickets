@@ -74,6 +74,10 @@ h3 { font-size: var(--fs-md); font-weight: 600; }
 .page-header h1:focus { outline: none; }
 .page-header p { margin-top: 4px; color: var(--text-2); font-size: var(--fs-sm); }
 
+/* Enlace de texto con el color de acento */
+.link { color: var(--accent); font-size: var(--fs-sm); font-weight: 600; text-decoration: none; border-radius: 4px; }
+.link:hover { text-decoration: underline; }
+
 .stack { display: flex; flex-direction: column; gap: var(--space-2); }
 .row { display: flex; align-items: center; gap: var(--space-1); flex-wrap: wrap; }
 .muted { color: var(--text-2); }

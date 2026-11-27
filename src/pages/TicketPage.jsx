@@ -7,6 +7,7 @@ import TicketCard from '../components/TicketCard';
 import { findEvent, findZone } from '../utils/events';
 import { ticketsOf } from '../utils/tickets';
 import { downloadDataUrl, qrDataUrl } from '../utils/qr';
+import { ticketSignature, verifyUrl } from '../utils/verify';
 import './TicketPage.css';
 
 export default function TicketPage({ catalog, order, itemIndex, onSend, onBack }) {
@@ -37,12 +38,14 @@ export default function TicketPage({ catalog, order, itemIndex, onSend, onBack }
   const ticket = tickets[Math.min(index, tickets.length - 1)];
   const zone = findZone(event, item.zoneId);
   const pending = order.status === 'pendiente';
+  const signature = ticketSignature(order, item, ticket);
+  const qrValue = verifyUrl(ticket, signature);
 
   async function download() {
     setAction('download');
     setError('');
     try {
-      const url = await qrDataUrl(`UCA-TICKETS|${ticket.code}|${event.id}`);
+      const url = await qrDataUrl(qrValue);
       downloadDataUrl(url, `boleto-${ticket.code}.png`);
     } catch {
       setError('No pudimos generar la descarga. Inténtalo de nuevo.');
@@ -70,7 +73,15 @@ export default function TicketPage({ catalog, order, itemIndex, onSend, onBack }
         <p>{pending ? 'Este boleto se activará cuando se confirme tu pago.' : 'Presenta este código en la entrada del evento.'}</p>
       </header>
 
-      <TicketCard event={event} zone={zone} ticket={ticket} status={order.status} />
+      <TicketCard
+        event={event}
+        zone={zone}
+        ticket={ticket}
+        status={order.status}
+        price={item.unitPrice}
+        qrValue={qrValue}
+        signature={signature}
+      />
 
       {tickets.length > 1 && (
         <div className="ticket-pager" role="group" aria-label="Cambiar de boleto">

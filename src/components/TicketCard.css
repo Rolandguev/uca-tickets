@@ -6,10 +6,11 @@
 .ticket__title { font-size: var(--fs-md); color: #111827; }
 .ticket__meta { font-size: 13px; color: #4b5563; }
 .ticket__grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-1);
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-1);
   margin: var(--space-2) 0; padding: var(--space-2) 0; border-top: 1px dashed #d1d5db; border-bottom: 1px dashed #d1d5db;
 }
 .ticket__grid dt { font-size: 12px; color: #6b7280; }
 .ticket__grid dd { margin: 0; font-weight: 700; }
 .ticket__qr { display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .ticket__code { font-size: 12px; color: #4b5563; letter-spacing: 0.04em; }
+.ticket__sig { font-size: 11px; color: #6b7280; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }

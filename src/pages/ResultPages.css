@@ -4,3 +4,4 @@
 .result__status { text-align: center; margin-top: var(--space-1); }
 .result__status { color: var(--success); }
 .result__status.is-error { color: var(--error-text); }
+.result__note { text-align: center; margin-bottom: var(--space-2); }

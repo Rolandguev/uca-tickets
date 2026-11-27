@@ -14,17 +14,16 @@ import AdminNav from '../components/AdminNav';
 import { useData } from '../context/DataContext';
 import { useSession } from '../context/SessionContext';
 import { usePrefs } from '../context/PrefsContext';
-import { loginRequest, recoverRequest, registerRequest } from '../utils/authApi';
+import * as usersApi from '../api/users';
 import { ADMIN_ROLES, hasAccess } from '../utils/roles';
 import { adminViewFromPath, useGo } from './paths';
 
 function LoginScreen() {
-  const { users } = useData();
   const { session, login } = useSession();
   const { simulateErrors } = usePrefs();
   const go = useGo();
   async function handleLogin(values) {
-    const user = await loginRequest(users, values, { simulateError: simulateErrors });
+    const user = await usersApi.login(values, { simulateError: simulateErrors });
     login(user);
     go('events');
   }
@@ -32,25 +31,21 @@ function LoginScreen() {
 }
 
 function RegisterScreen() {
-  const { users, addUser } = useData();
+  const { registerUser } = useData();
   const { session, login } = useSession();
-  const { simulateErrors } = usePrefs();
   const go = useGo();
   async function handleRegister(values) {
-    const newUser = await registerRequest(users, values, { simulateError: simulateErrors });
-    addUser(newUser);
-    const { password: _password, ...safeUser } = newUser;
-    login(safeUser); // la cuenta nueva entra con sesión iniciada
+    const newUser = await registerUser(values);
+    login(newUser); // la cuenta nueva entra con sesión iniciada
     go('events');
   }
   return <RegisterPage session={session} onRegister={handleRegister} onEvents={() => go('events')} onNavigate={go} />;
 }
 
 function RecoverScreen() {
-  const { users } = useData();
   const { simulateErrors } = usePrefs();
   const go = useGo();
-  return <RecoverPage onRecover={(email) => recoverRequest(users, { email }, { simulateError: simulateErrors })} onNavigate={go} />;
+  return <RecoverPage onRecover={(email) => usersApi.recover(email, { simulateError: simulateErrors })} onNavigate={go} />;
 }
 
 function ProfileScreen() {

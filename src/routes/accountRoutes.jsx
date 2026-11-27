@@ -15,7 +15,8 @@ import { useData } from '../context/DataContext';
 import { useSession } from '../context/SessionContext';
 import { usePrefs } from '../context/PrefsContext';
 import * as usersApi from '../api/users';
-import { ADMIN_ROLES, hasAccess } from '../utils/roles';
+import { ADMIN_ROLES, USER_ADMIN_ROLES, hasAccess } from '../utils/roles';
+import RequireRole from './RequireRole';
 import { adminViewFromPath, useGo } from './paths';
 
 function LoginScreen() {
@@ -121,21 +122,37 @@ function ReportsScreen() {
   return <ReportsPage session={session} catalog={catalog} orders={orders} onNavigate={go} />;
 }
 
-// Tabla de rutas de la Persona B (Fase 2: agregar aquí el guardia de rutas por rol)
+// guardia de rutas por rol
 export const accountRoutes = [
   { path: 'login', element: <LoginScreen />, handle: { title: 'Inicia sesión' } },
   { path: 'registro', element: <RegisterScreen />, handle: { title: 'Crear cuenta' } },
   { path: 'recuperar', element: <RecoverScreen />, handle: { title: 'Recuperar contraseña' } },
-  { path: 'perfil', element: <ProfileScreen />, handle: { title: 'Mi perfil' } },
   {
+    // Perfil: basta con haber iniciado sesión
+    element: <RequireRole />,
+    children: [{ path: 'perfil', element: <ProfileScreen />, handle: { title: 'Mi perfil' } }],
+  },
+  {
+    // Panel: Administrador u Organizador
     path: 'admin',
-    element: <AdminLayout />,
+    element: <RequireRole roles={ADMIN_ROLES} />,
     children: [
-      { index: true, element: <AdminScreen />, handle: { title: 'Panel de administración' } },
-      { path: 'eventos', element: <AdminEventsScreen />, handle: { title: 'Gestión de eventos' } },
-      { path: 'inventario', element: <AdminInventoryScreen />, handle: { title: 'Inventario y precios' } },
-      { path: 'usuarios', element: <AdminUsersScreen />, handle: { title: 'Usuarios' } },
-      { path: 'reportes', element: <ReportsScreen />, handle: { title: 'Reportes' } },
+      {
+        element: <AdminLayout />,
+        children: [
+          { index: true, element: <AdminScreen />, handle: { title: 'Panel de administración' } },
+          { path: 'eventos', element: <AdminEventsScreen />, handle: { title: 'Gestión de eventos' } },
+          { path: 'inventario', element: <AdminInventoryScreen />, handle: { title: 'Inventario y precios' } },
+          {
+            // Usuarios y reportes: solo Administrador
+            element: <RequireRole roles={USER_ADMIN_ROLES} />,
+            children: [
+              { path: 'usuarios', element: <AdminUsersScreen />, handle: { title: 'Usuarios' } },
+              { path: 'reportes', element: <ReportsScreen />, handle: { title: 'Reportes' } },
+            ],
+          },
+        ],
+      },
     ],
   },
 ];

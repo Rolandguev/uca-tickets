@@ -1,58 +1,77 @@
-import { createContext, useContext, useMemo } from 'react';
-import { EVENTS } from '../data/events';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import * as eventsApi from '../api/events';
+import * as ordersApi from '../api/orders';
+import * as usersApi from '../api/users';
+import { KEYS, isAbort, loadTable } from '../api/client';
 import { SEED_ORDERS } from '../data/orders';
 import { ACCOUNTS } from '../data/accounts';
-import { useLocalStorage } from '../hooks/useLocalStorage';
-import { useAsync } from '../hooks/useAsync';
-import { fetchEvents } from '../utils/api';
-import { saveRequest } from '../utils/adminApi';
-import { addEvent, removeEvent, updateEvent, updateZone } from '../utils/eventAdmin';
 import { usePrefs } from './PrefsContext';
 import { useSession } from './SessionContext';
 
-// PUENTE TEMPORAL (Fase 1): eventos, órdenes y usuarios como estaban en App.jsx.
-// En la Fase 2 esto se reemplaza por la capa src/api (Persona B) y los componentes
-// leerán los datos desde ahí. Las funciones expuestas se mantienen con los mismos nombres.
+// Estado de datos de la app. Todo el acceso a datos pasa por la capa src/api:
+// aquí solo se guarda el resultado en React y se exponen funciones a las pantallas.
 const DataContext = createContext(null);
+
+const withoutPassword = ({ password: _password, ...user }) => user;
 
 export function DataProvider({ children }) {
   const { simulateErrors } = usePrefs();
-  const [eventList, setEventList] = useLocalStorage('uca.events', EVENTS);
-  const [orders, setOrders] = useLocalStorage('uca.orders', SEED_ORDERS);
-  const [users, setUsers] = useLocalStorage('uca.users', ACCOUNTS);
-
-  const loaded = useAsync(() => fetchEvents(EVENTS, { simulateError: simulateErrors }), [simulateErrors]);
   const opts = { simulateError: simulateErrors };
 
-  // Los eventos viven en eventList (editable desde el panel); "loaded" simula la carga y el error
-  const catalog = { ...loaded, data: loaded.status === 'success' ? eventList : null };
+  // Catálogo: carga asíncrona con estados loading / success / error y cancelación
+  const [catalog, setCatalog] = useState({ status: 'loading', data: null, error: null });
+  const [attempt, setAttempt] = useState(0);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setCatalog({ status: 'loading', data: null, error: null });
+    eventsApi
+      .listEvents({ signal: controller.signal, simulateError: simulateErrors })
+      .then((data) => setCatalog({ status: 'success', data, error: null }))
+      .catch((error) => {
+        if (!isAbort(error)) setCatalog({ status: 'error', data: null, error });
+      });
+    return () => controller.abort(); // al salir o recargar, la petición en curso se cancela
+  }, [simulateErrors, attempt]);
+
+  // Órdenes y usuarios se leen de una vez desde localStorage (las pantallas los necesitan al instante)
+  const [orders, setOrders] = useState(() => loadTable(KEYS.orders, SEED_ORDERS));
+  const [users, setUsers] = useState(() => loadTable(KEYS.users, ACCOUNTS).map(withoutPassword));
+
+  const setEvents = (list) => setCatalog((c) => ({ ...c, data: list }));
 
   const value = {
-    catalog,
+    catalog: { ...catalog, reload: () => setAttempt((n) => n + 1) },
     events: catalog.data ?? [],
     orders,
     users,
-    addOrder: (order) => setOrders((prev) => [...prev, order]),
-    addUser: (user) => setUsers((prev) => [...prev, user]),
-    async addEventItem(values) {
-      await saveRequest(opts);
-      setEventList((list) => addEvent(list, values));
+
+    // La orden aparece de inmediato y se guarda en segundo plano
+    addOrder(order) {
+      setOrders((prev) => [...prev, order]);
+      ordersApi.createOrder(order);
     },
-    async editEvent(id, values) {
-      await saveRequest(opts);
-      setEventList((list) => updateEvent(list, id, values));
-    },
-    async removeEventItem(id) {
-      await saveRequest(opts);
-      setEventList((list) => removeEvent(list, id));
-    },
-    async editZone(eventId, zoneId, values) {
-      await saveRequest(opts);
-      setEventList((list) => updateZone(list, eventId, zoneId, values));
+
+    async registerUser(values) {
+      const user = await usersApi.register(values, opts);
+      setUsers((prev) => [...prev, user]);
+      return user;
     },
     async toggleUser(id) {
-      await saveRequest(opts);
-      setUsers((list) => list.map((u) => (u.id === id ? { ...u, active: !u.active } : u)));
+      setUsers(await usersApi.toggleUser(id, opts));
+    },
+
+    async addEventItem(values) {
+      setEvents(await eventsApi.createEvent(values, opts));
+    },
+    async editEvent(id, values) {
+      setEvents(await eventsApi.editEvent(id, values, opts));
+    },
+    async removeEventItem(id) {
+      setEvents(await eventsApi.deleteEvent(id, opts));
+    },
+    async editZone(eventId, zoneId, values) {
+      setEvents(await eventsApi.editZone(eventId, zoneId, values, opts));
     },
   };
 

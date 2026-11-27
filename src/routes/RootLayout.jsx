@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Outlet, ScrollRestoration, useLocation, useMatches } from 'react-router';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import PwaNotices from '../components/PwaNotices';
 
 // Layout compartido por todas las rutas: enlace de salto, barra superior, contenido y pie.
 export default function RootLayout() {
@@ -28,6 +29,7 @@ export default function RootLayout() {
     <>
       <a href="#main" className="skip-link">Saltar al contenido</a>
       <Navbar />
+      <PwaNotices />
       <main id="main" ref={mainRef} className="main" tabIndex={-1}>
         <Outlet />
       </main>

@@ -7,7 +7,7 @@ const LINKS = [
   { view: 'adminEvents', label: 'Eventos' },
   { view: 'adminInventory', label: 'Inventario y precios' },
   { view: 'adminUsers', label: 'Usuarios', roles: USER_ADMIN_ROLES },
-  { view: 'reports', label: 'Reportes' },
+  { view: 'reports', label: 'Reportes', roles: USER_ADMIN_ROLES },
 ];
 
 // Vistas que pertenecen al panel (App las usa para saber cuándo mostrar la barra)

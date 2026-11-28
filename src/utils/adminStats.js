@@ -65,3 +65,14 @@ export function ordersByStatus(orders) {
   }));
 }
 
+// Filtra las órdenes por evento y por periodo (fechas AAAA-MM-DD, ambas incluidas).
+// Con un evento elegido, cada orden conserva solo los boletos de ese evento.
+export function filterOrders(orders, { eventId = '', from = '', to = '' } = {}) {
+  return orders
+    .filter((order) => {
+      const day = order.createdAt.slice(0, 10);
+      return (!from || day >= from) && (!to || day <= to);
+    })
+    .map((order) => (eventId ? { ...order, items: order.items.filter((item) => item.eventId === eventId) } : order))
+    .filter((order) => order.items.length > 0);
+}

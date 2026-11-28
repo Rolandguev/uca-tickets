@@ -6,7 +6,7 @@ import Loader from '../components/Loader';
 import StatCard from '../components/StatCard';
 import { dashboardStats, recentOrders } from '../utils/adminStats';
 import { formatDateTime, formatMoney, plural } from '../utils/format';
-import { ADMIN_ROLES, hasAccess } from '../utils/roles';
+import { ADMIN_ROLES, USER_ADMIN_ROLES, hasAccess } from '../utils/roles';
 import { ORDER_LABEL, ORDER_TONE } from '../utils/tickets';
 import Button from '../components/Button';
 import './AdminPage.css';
@@ -47,7 +47,9 @@ export default function AdminPage({ session, catalog, orders, users, onNavigate 
       <header className="page-header">
         <h1 tabIndex={-1}>Panel de administración</h1>
         <p>Resumen de ventas, eventos y usuarios.</p>
-        <Button variant="secondary" size="sm" onClick={() => onNavigate('reports')}>Ver reportes</Button>
+        {hasAccess(session, USER_ADMIN_ROLES) && (
+     <Button variant="secondary" size="sm" onClick={() => onNavigate('reports')}>Ver reportes</Button>
+         )}
       </header>
       <section className="admin__stats" aria-label="Resumen">
         <StatCard label="Ventas pagadas" value={formatMoney(stats.revenue)} hint="Órdenes con pago confirmado" />
